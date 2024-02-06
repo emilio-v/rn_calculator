@@ -12,72 +12,72 @@ enum Operators {
 
 export const CalculatorScreen = () => {
   const [prevNumber, setPrevNumber] = useState('0');
-  const [number, setNumber] = useState('0');
+  const [currNumber, setCurrNumber] = useState('0');
 
   const lastOperation = useRef<Operators>();
 
   const clearNumber = () => {
-    setNumber('0');
+    setCurrNumber('0');
     setPrevNumber('0');
   };
 
-  const onSetNumber = (actionText: string) => {
-    if (number.includes('.') && actionText === '.') {
+  const setNumber = (actionText: string) => {
+    if (currNumber.includes('.') && actionText === '.') {
       return;
     }
 
-    if (number.startsWith('0') || number.startsWith('-0')) {
+    if (currNumber.startsWith('0') || currNumber.startsWith('-0')) {
       if (actionText === '.') {
-        setNumber(number + actionText);
-      } else if (actionText === '0' && number.includes('.')) {
-        setNumber(number + actionText);
-      } else if (actionText !== '0' && !number.includes('.')) {
-        setNumber(actionText);
-      } else if (actionText === '0' && !number.includes('.')) {
-        setNumber(number);
+        setCurrNumber(currNumber + actionText);
+      } else if (actionText === '0' && currNumber.includes('.')) {
+        setCurrNumber(currNumber + actionText);
+      } else if (actionText !== '0' && !currNumber.includes('.')) {
+        setCurrNumber(actionText);
+      } else if (actionText === '0' && !currNumber.includes('.')) {
+        setCurrNumber(currNumber);
       } else {
-        setNumber(number + actionText);
+        setCurrNumber(currNumber + actionText);
       }
     } else {
-      setNumber(number + actionText);
+      setCurrNumber(currNumber + actionText);
     }
   };
 
   const negativeOrPositive = () => {
-    if (number.includes('-')) {
-      setNumber(number.replace('-', ''));
+    if (currNumber.includes('-')) {
+      setCurrNumber(currNumber.replace('-', ''));
     } else {
-      setNumber('-' + number);
+      setCurrNumber('-' + currNumber);
     }
   };
 
   const delNumber = () => {
-    if (number === '0') {
+    if (currNumber === '0') {
       return;
     }
 
     let negative = '';
-    let tempNumber = number;
+    let tempNumber = currNumber;
 
-    if (number.includes('-')) {
+    if (currNumber.includes('-')) {
       negative = '-';
-      tempNumber = number.substring(1);
+      tempNumber = currNumber.substring(1);
     }
 
     if (tempNumber.length > 1) {
-      setNumber(negative + tempNumber.slice(0, -1));
+      setCurrNumber(negative + tempNumber.slice(0, -1));
     } else {
-      setNumber('0');
+      setCurrNumber('0');
     }
   };
 
   const setPreviousNumber = () => {
-    if (number.endsWith('.')) {
-      setPrevNumber(number.slice(0, -1));
+    if (currNumber.endsWith('.')) {
+      setPrevNumber(currNumber.slice(0, -1));
     } else {
-      setPrevNumber(number);
+      setPrevNumber(currNumber);
     }
-    setNumber('0');
+    setCurrNumber('0');
   };
 
   const divideButton = () => {
@@ -100,13 +100,35 @@ export const CalculatorScreen = () => {
     lastOperation.current = Operators.add;
   };
 
+  const calculate = () => {
+    const prevNum = Number(prevNumber);
+    const currNum = Number(currNumber);
+
+    switch (lastOperation.current) {
+      case Operators.add:
+        setCurrNumber(`${prevNum + currNum}`);
+        break;
+      case Operators.subtract:
+        setCurrNumber(`${prevNum - currNum}`);
+        break;
+      case Operators.multiply:
+        setCurrNumber(`${prevNum * currNum}`);
+        break;
+      case Operators.divide:
+        setCurrNumber(`${prevNum / currNum}`);
+        break;
+    }
+
+    setPrevNumber('0');
+  };
+
   return (
     <View style={styles.calculatorContainer}>
       {prevNumber !== '0' && (
         <Text style={styles.smallResult}>{prevNumber}</Text>
       )}
       <Text style={styles.result} numberOfLines={1} adjustsFontSizeToFit>
-        {number}
+        {currNumber}
       </Text>
 
       <View style={styles.buttonRow}>
@@ -117,30 +139,30 @@ export const CalculatorScreen = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <ButtonCalc label="7" onAction={onSetNumber} />
-        <ButtonCalc label="8" onAction={onSetNumber} />
-        <ButtonCalc label="9" onAction={onSetNumber} />
+        <ButtonCalc label="7" onAction={setNumber} />
+        <ButtonCalc label="8" onAction={setNumber} />
+        <ButtonCalc label="9" onAction={setNumber} />
         <ButtonCalc label="x" color="orange" onAction={multiplyButton} />
       </View>
 
       <View style={styles.buttonRow}>
-        <ButtonCalc label="4" onAction={onSetNumber} />
-        <ButtonCalc label="5" onAction={onSetNumber} />
-        <ButtonCalc label="6" onAction={onSetNumber} />
+        <ButtonCalc label="4" onAction={setNumber} />
+        <ButtonCalc label="5" onAction={setNumber} />
+        <ButtonCalc label="6" onAction={setNumber} />
         <ButtonCalc label="-" color="orange" onAction={subtractButton} />
       </View>
 
       <View style={styles.buttonRow}>
-        <ButtonCalc label="1" onAction={onSetNumber} />
-        <ButtonCalc label="2" onAction={onSetNumber} />
-        <ButtonCalc label="3" onAction={onSetNumber} />
+        <ButtonCalc label="1" onAction={setNumber} />
+        <ButtonCalc label="2" onAction={setNumber} />
+        <ButtonCalc label="3" onAction={setNumber} />
         <ButtonCalc label="+" color="orange" onAction={addButton} />
       </View>
 
       <View style={styles.buttonRow}>
-        <ButtonCalc label="0" longButton onAction={onSetNumber} />
-        <ButtonCalc label="." onAction={onSetNumber} />
-        <ButtonCalc label="=" color="orange" onAction={onSetNumber} />
+        <ButtonCalc label="0" longButton onAction={setNumber} />
+        <ButtonCalc label="." onAction={setNumber} />
+        <ButtonCalc label="=" color="orange" onAction={calculate} />
       </View>
     </View>
   );
