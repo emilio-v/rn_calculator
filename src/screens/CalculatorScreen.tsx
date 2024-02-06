@@ -106,15 +106,39 @@ export const CalculatorScreen = () => {
 
     switch (lastOperation.current) {
       case Operators.add:
+        if (isNaN(prevNum)) {
+          setCurrNumber('Not a number');
+          setPrevNumber('0');
+          return;
+        }
         setCurrNumber(`${prevNum + currNum}`);
         break;
       case Operators.subtract:
+        if (isNaN(prevNum)) {
+          setCurrNumber('Not a number');
+          setPrevNumber('0');
+          return;
+        }
         setCurrNumber(`${prevNum - currNum}`);
         break;
       case Operators.multiply:
+        if (isNaN(prevNum)) {
+          setCurrNumber('Not a number');
+          setPrevNumber('0');
+          return;
+        }
         setCurrNumber(`${prevNum * currNum}`);
         break;
       case Operators.divide:
+        if (prevNum === 0 && currNum === 0) {
+          return;
+        }
+        if (isNaN(prevNum) || (prevNum !== 0 && currNum === 0)) {
+          setCurrNumber('Not a number');
+          setPrevNumber('0');
+          return;
+        }
+
         setCurrNumber(`${prevNum / currNum}`);
         break;
     }
