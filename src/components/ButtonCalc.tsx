@@ -6,12 +6,14 @@ interface ButtonCalcProps {
   label: string;
   color?: keyof typeof colors;
   longButton?: boolean;
+  onAction: (actionText: string) => void;
 }
 
 export const ButtonCalc = ({
   label,
   color = 'darkGray',
   longButton = false,
+  onAction,
 }: ButtonCalcProps) => {
   const textColor = useMemo(
     () => (color === 'gray' ? 'black' : 'white'),
@@ -20,7 +22,7 @@ export const ButtonCalc = ({
   const buttonWidth = useMemo(() => (longButton ? 180 : 80), [longButton]);
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => onAction(label)}>
       <View
         style={{
           ...styles.button,
